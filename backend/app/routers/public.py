@@ -10,7 +10,17 @@ from app.schemas import PaginatedPosts, PostDetailOut, PostListOut, ReviewCreate
 router = APIRouter(tags=["public"])
 
 
-@router.get("/healthz")
+@router.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
+async def root_health() -> dict[str, bool]:
+    return {"ok": True}
+
+
+@router.api_route("/health", methods=["GET", "HEAD"], include_in_schema=False)
+async def health() -> dict[str, bool]:
+    return {"ok": True}
+
+
+@router.api_route("/healthz", methods=["GET", "HEAD"], include_in_schema=False)
 async def healthz() -> dict[str, bool]:
     return {"ok": True}
 
