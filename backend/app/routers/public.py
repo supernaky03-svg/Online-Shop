@@ -10,8 +10,8 @@ from app.schemas import PaginatedPosts, PostDetailOut, PostListOut, ReviewCreate
 router = APIRouter(tags=["public"])
 
 
-@router.get("/health")
-async def health() -> dict[str, bool]:
+@router.get("/healthz")
+async def healthz() -> dict[str, bool]:
     return {"ok": True}
 
 
