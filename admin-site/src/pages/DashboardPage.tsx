@@ -1,5 +1,5 @@
-import { LogOut, PackagePlus, RefreshCw, Store } from 'lucide-react';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { LogOut, PackagePlus, RefreshCw, Search, Store } from 'lucide-react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { deletePost } from '../api';
 import ConfirmModal from '../components/ConfirmModal';
@@ -20,6 +20,13 @@ export default function DashboardPage({ posts, setPosts, reloadPosts, onLogout }
   const [reviewPost, setReviewPost] = useState<Post | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Post | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+  const filteredPosts = useMemo(() => {
+    if (!normalizedSearch) return posts;
+    return posts.filter((post) => post.name.toLowerCase().includes(normalizedSearch));
+  }, [normalizedSearch, posts]);
 
   async function refresh() {
     setRefreshing(true);
@@ -61,11 +68,24 @@ export default function DashboardPage({ posts, setPosts, reloadPosts, onLogout }
       </header>
 
       <section className="toolbar">
-        <div><strong>{posts.length}</strong><span>Total posts</span></div>
+        <div className="toolbar-total"><strong>{posts.length}</strong><span>Total posts</span></div>
+        <label className="admin-search">
+          <Search size={18} />
+          <input
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Search product name..."
+            aria-label="Search product name"
+          />
+        </label>
         <button onClick={() => setFormPost('new')}><PackagePlus size={18} /> Add Post</button>
       </section>
 
-      <PostTable posts={posts} onEdit={(post) => setFormPost(post)} onDelete={(post) => setDeleteTarget(post)} onReviews={(post) => setReviewPost(post)} />
+      {posts.length > 0 && filteredPosts.length === 0 ? (
+        <section className="empty-state"><h2>No matching posts</h2><p>Try another product name.</p></section>
+      ) : (
+        <PostTable posts={filteredPosts} onEdit={(post) => setFormPost(post)} onDelete={(post) => setDeleteTarget(post)} onReviews={(post) => setReviewPost(post)} />
+      )}
 
       {formPost ? (
         <PostFormModal

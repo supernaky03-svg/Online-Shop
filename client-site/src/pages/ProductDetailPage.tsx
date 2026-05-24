@@ -30,6 +30,7 @@ export default function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeAspectRatio, setActiveAspectRatio] = useState<number | null>(null);
   const [gmail, setGmail] = useState('');
   const [reviewText, setReviewText] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -42,6 +43,8 @@ export default function ProductDetailPage() {
       try {
         const result = await getPost(Number(postId));
         setPost(result);
+        setActiveImage(0);
+        setActiveAspectRatio(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load product');
       } finally {
@@ -91,6 +94,7 @@ export default function ProductDetailPage() {
 
   const images = post.images || [];
   const reviews: Review[] = post.reviews || [];
+  const activeImageUrl = images[activeImage]?.image_url;
 
   return (
     <main className="page detail-page">
@@ -98,13 +102,24 @@ export default function ProductDetailPage() {
 
       <section className="product-shell">
         <div className="album">
-          <div className="album-main">
-            {images[activeImage] ? <img src={images[activeImage].image_url} alt={post.name} /> : <div className="image-fallback">No image</div>}
+          <div className="album-main" style={activeAspectRatio ? { aspectRatio: String(activeAspectRatio) } : undefined}>
+            {activeImageUrl ? (
+              <img
+                src={activeImageUrl}
+                alt={post.name}
+                onLoad={(event) => {
+                  const img = event.currentTarget;
+                  if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                    setActiveAspectRatio(img.naturalWidth / img.naturalHeight);
+                  }
+                }}
+              />
+            ) : <div className="image-fallback">No image</div>}
           </div>
           {images.length > 1 ? (
             <div className="album-thumbs">
               {images.map((image, index) => (
-                <button key={image.id} className={index === activeImage ? 'active' : ''} onClick={() => setActiveImage(index)}>
+                <button key={image.id} className={index === activeImage ? 'active' : ''} onClick={() => { setActiveImage(index); setActiveAspectRatio(null); }}>
                   <img src={image.image_url} alt={`${post.name} ${index + 1}`} />
                 </button>
               ))}
