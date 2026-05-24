@@ -136,7 +136,7 @@ export default function ProductDetailPage() {
           {post.caption ? <p className="caption-text">{post.caption}</p> : <p className="caption-text muted">No product description.</p>}
 
           <section className="buy-panel">
-            <h2>Buy Contact</h2>
+            <h2>Contact on</h2>
             {post.contacts.length > 0 ? (
               <div className="contact-grid">
                 {post.contacts.map((contact) => <ContactButton key={contact.id} contact={contact} />)}

@@ -151,7 +151,7 @@ export default function PostFormModal({ post, onClose, onSaved }: Props) {
         </section>
 
         <section className="form-section">
-          <div className="section-row"><h3>Buy Contact</h3><button type="button" className="secondary tiny" onClick={addContact}><Plus size={15} /> Add</button></div>
+          <div className="section-row"><h3>Contact on</h3><button type="button" className="secondary tiny" onClick={addContact}><Plus size={15} /> Add</button></div>
           {contacts.length === 0 ? <p className="muted">No contacts yet. Add Facebook, TikTok, Telegram, or Viber.</p> : null}
           <div className="contact-box-list">
             {contacts.map((contact, index) => (
