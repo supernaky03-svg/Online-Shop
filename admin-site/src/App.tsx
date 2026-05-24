@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { getAdminPosts, login, logout } from './api';
+import { clearAdminToken, getAdminPosts, hasAdminToken, login, logout } from './api';
 import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import type { Post } from './types';
@@ -17,7 +17,18 @@ export default function App() {
   }
 
   useEffect(() => {
-    loadPosts().catch(() => setAuthed(false)).finally(() => setChecking(false));
+    if (!hasAdminToken()) {
+      setAuthed(false);
+      setChecking(false);
+      return;
+    }
+
+    loadPosts()
+      .catch(() => {
+        clearAdminToken();
+        setAuthed(false);
+      })
+      .finally(() => setChecking(false));
   }, []);
 
   async function handleLogin(password: string) {

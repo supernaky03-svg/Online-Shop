@@ -92,3 +92,4 @@ class LoginIn(BaseModel):
 
 class LoginOut(BaseModel):
     ok: bool
+    token: str | None = None

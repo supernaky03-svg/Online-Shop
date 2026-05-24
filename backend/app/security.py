@@ -6,7 +6,7 @@ import time
 from typing import Any
 
 from fastapi import Cookie, Header, HTTPException, Request, status
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import Response
 
 from app.config import get_settings
 
@@ -65,7 +65,7 @@ async def require_admin(
     return verify_admin_token(token)
 
 
-def attach_session_cookie(response: JSONResponse, token: str) -> None:
+def attach_session_cookie(response: Response, token: str) -> None:
     settings = get_settings()
     response.set_cookie(
         key=SESSION_COOKIE,

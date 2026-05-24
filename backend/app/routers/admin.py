@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile, status
-from fastapi.responses import JSONResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -28,14 +27,13 @@ async def _get_post_or_404(db: AsyncSession, post_id: int) -> Post:
 
 
 @router.post("/login", response_model=LoginOut)
-async def login(payload: LoginIn) -> JSONResponse:
+async def login(payload: LoginIn, response: Response) -> dict[str, bool | str]:
     settings = get_settings()
     if payload.password != settings.admin_password:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wrong password")
     token = create_admin_token()
-    response = JSONResponse({"ok": True})
     attach_session_cookie(response, token)
-    return response
+    return {"ok": True, "token": token}
 
 
 @router.post("/logout", response_model=LoginOut)
