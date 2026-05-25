@@ -6,6 +6,31 @@ from app.schemas import BuyContactIn
 
 ALLOWED_CONTACT_TYPES = {"facebook", "tiktok", "telegram", "viber"}
 
+POPULAR_EMAIL_DOMAINS = {
+    "gmail.com",
+    "googlemail.com",
+    "outlook.com",
+    "hotmail.com",
+    "live.com",
+    "msn.com",
+    "yahoo.com",
+    "ymail.com",
+    "rocketmail.com",
+    "icloud.com",
+    "me.com",
+    "mac.com",
+    "proton.me",
+    "protonmail.com",
+    "aol.com",
+    "mail.com",
+    "gmx.com",
+    "gmx.net",
+    "zoho.com",
+    "yandex.com",
+}
+
+POPULAR_EMAIL_DOMAINS_MESSAGE = "Please use a common email provider such as Gmail, Outlook, Yahoo, iCloud, Proton, or Zoho."
+
 
 def clean_optional(value: str | None) -> str | None:
     if value is None:
@@ -21,6 +46,16 @@ def validate_post_fields(name: str, price: int, image_count: int) -> None:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Price must be greater than 0")
     if image_count < 1 or image_count > 5:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Images must be between 1 and 5")
+
+
+def validate_review_email_domain(email: str) -> str:
+    normalized = email.strip().lower()
+    if "@" not in normalized:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Please enter a valid email address")
+    domain = normalized.rsplit("@", 1)[1]
+    if domain not in POPULAR_EMAIL_DOMAINS:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=POPULAR_EMAIL_DOMAINS_MESSAGE)
+    return normalized
 
 
 def validate_contacts(contacts: list[BuyContactIn]) -> list[BuyContactIn]:

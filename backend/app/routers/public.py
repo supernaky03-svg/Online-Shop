@@ -6,6 +6,7 @@ from sqlalchemy.orm import selectinload
 from app.database import get_db
 from app.models import Post, Review
 from app.schemas import PaginatedPosts, PostDetailOut, PostListOut, ReviewCreate, ReviewOut
+from app.validators import validate_review_email_domain
 
 router = APIRouter(tags=["public"])
 
@@ -95,7 +96,8 @@ async def create_review(post_id: int, payload: ReviewCreate, db: AsyncSession = 
     exists = await db.scalar(select(Post.id).where(Post.id == post_id))
     if not exists:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-    review = Review(post_id=post_id, gmail=str(payload.gmail), review_text=payload.review_text.strip())
+    review_email = validate_review_email_domain(str(payload.gmail))
+    review = Review(post_id=post_id, gmail=review_email, review_text=payload.review_text.strip())
     db.add(review)
     await db.commit()
     await db.refresh(review)

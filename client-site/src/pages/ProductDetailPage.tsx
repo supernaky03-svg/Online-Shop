@@ -5,7 +5,7 @@ import { FaFacebook, FaTelegram, FaTiktok, FaViber } from 'react-icons/fa';
 import { Link, useParams } from 'react-router-dom';
 import { createReview, getPost } from '../api';
 import type { BuyContact, Post, Review } from '../types';
-import { formatDate, formatKs, isValidEmail } from '../utils';
+import { formatDate, formatKs, isValidEmail, POPULAR_EMAIL_MESSAGE } from '../utils';
 
 const iconMap = {
   facebook: FaFacebook,
@@ -58,7 +58,7 @@ export default function ProductDetailPage() {
     event.preventDefault();
     if (!post) return;
     if (!isValidEmail(gmail)) {
-      toast.error('Please enter a valid email address.');
+      toast.error(POPULAR_EMAIL_MESSAGE);
       return;
     }
     if (!reviewText.trim()) {
@@ -153,7 +153,7 @@ export default function ProductDetailPage() {
         </div>
 
         <form className="review-form" onSubmit={submitReview}>
-          <input value={gmail} onChange={(event) => setGmail(event.target.value)} placeholder="Your Gmail / email address" inputMode="email" />
+          <input value={gmail} onChange={(event) => setGmail(event.target.value)} placeholder="Gmail / Outlook / Yahoo email address" inputMode="email" />
           <textarea value={reviewText} onChange={(event) => setReviewText(event.target.value)} placeholder="Write your review..." rows={4} />
           <button disabled={submitting} type="submit"><Send size={17} /> {submitting ? 'Submitting...' : 'Submit review'}</button>
         </form>
